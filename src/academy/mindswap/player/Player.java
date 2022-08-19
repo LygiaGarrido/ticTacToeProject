@@ -6,6 +6,8 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static academy.mindswap.utils.Messages.*;
+
 public class Player {
     public boolean isPlayerTurn;
     private Socket socket;
@@ -54,7 +56,7 @@ public class Player {
                 communicateWithServer();
             }
         } catch (IOException e) {
-            System.out.println("Hum... seems that the server is dead");
+            System.out.println(DEAD_SERVER);
             handleServer();
         }
     }
