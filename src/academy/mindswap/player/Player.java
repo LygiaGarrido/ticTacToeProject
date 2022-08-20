@@ -57,7 +57,7 @@ public class Player {
             }
         } catch (IOException e) {
             System.out.println(DEAD_SERVER);
-            handleServer();
+            //handleServer();
         }
     }
 
@@ -65,6 +65,9 @@ public class Player {
         String message = readFromConsole();
 
         writer.write(message);
+        if(message.equals("quit")){
+            close();
+        }
         writer.newLine();
         writer.flush();
 
@@ -103,11 +106,41 @@ public class Player {
             }
         }
 
+        private void drawBoard(String[] position){
+
+            System.out.println();
+            System.out.println(position[1] + "|" + position[2] + "|" + position[3]);
+            drawSeparator();
+            System.out.println(position[4] + "|" + position[5] + "|" + position[6]);
+            drawSeparator();
+            System.out.println(position[7] + "|" + position[8] + "|" + position[9]);
+            System.out.println();
+        }
+        public void drawSeparator() {
+            System.out.println("----------------");
+        }
+
         private void readMessage() throws IOException {
             //     System.out.println("reading");
             String readMessageFromServer = reader.readLine();
-            System.out.println(readMessageFromServer);
+            String[] splitted = readMessageFromServer.split(",");
+
+            if(splitted[0].equals("board")){
+                drawBoard(splitted);
+                checkWinner(Integer.parseInt(splitted[10]));
+            } else {
+                System.out.println(readMessageFromServer);
+            }
             readMessage();
+
+        }
+
+        private void checkWinner(int value){
+            if(value == 0){
+                System.out.println(LOSER);
+            } else if (value == 1) {
+                System.out.println(WINNER);
+            }
 
         }
     }

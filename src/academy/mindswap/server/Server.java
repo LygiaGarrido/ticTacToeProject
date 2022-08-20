@@ -36,5 +36,21 @@ public class Server {
 
         }
 
+
     }
 }
+
+/* TODO
+
+
+inform player's turn (and consider only the correct player's move - in case the other player does sth wrong)
+check for winners after each move
+end game when there is a winner or a tie
+consider tie
+inform player that other player has left
+ask for game move only after 2 players have joined the room
+check if move position is already taken and do not allow a new move over it
+
+
+
+ */

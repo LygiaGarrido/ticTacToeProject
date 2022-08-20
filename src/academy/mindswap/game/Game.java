@@ -8,8 +8,7 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static academy.mindswap.utils.Messages.ASK_FOR_NAME;
-import static academy.mindswap.utils.Messages.NEW_PLAYER_HAS_ARRIVED;
+import static academy.mindswap.utils.Messages.*;
 
 
 public class Game implements Runnable {
@@ -20,6 +19,7 @@ public class Game implements Runnable {
     private static final int NUMBER_OF_PLAYER = 2;
 
     private boolean isGameStarted ;
+    private GameLogic gameLogic;
 
 
     public Game(Server server) {
@@ -27,20 +27,42 @@ public class Game implements Runnable {
         threadPool = Executors.newFixedThreadPool(NUMBER_OF_PLAYER);
         listOfPlayers = new CopyOnWriteArrayList<>();
 
+        startGame();
     }
 
     public void acceptPlayer(Socket playerSocket){
-        threadPool.submit(new PlayerHandler(playerSocket));
+        if(listOfPlayers.size() < 2){
+            threadPool.submit(new PlayerHandler(playerSocket));
+        }
     }
 
     public void addPlayerToList(PlayerHandler playerHandler){
+        playerHandler.setId(listOfPlayers.size());
         listOfPlayers.add(playerHandler);
+
     }
 
-    public void broadCast(String message,PlayerHandler playerHandler){
+    public void broadCast(String message, PlayerHandler playerHandler){
         listOfPlayers.stream()
                 .filter(player -> !playerHandler.equals(player))
                 .forEach(player ->player.sendMessageToPlayer(message));
+    }
+    public void broadCastToAllPlayers(String message){
+        listOfPlayers.stream().forEach(player ->player.sendMessageToPlayer(message));
+    }
+
+    public String gameStatus(int playerId){
+        StringBuilder gameStatusMessage = new StringBuilder("board");
+        String[][] x = gameLogic.getBoard();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                gameStatusMessage.append(",");
+                gameStatusMessage.append(gameLogic.getBoard()[i][j]);
+            }
+        }
+        gameStatusMessage.append(",");
+        gameStatusMessage.append(gameLogic.checkWinner(playerId));
+        return gameStatusMessage.toString();
     }
 
     public void broadCast(String message){
@@ -49,6 +71,7 @@ public class Game implements Runnable {
 
     public void startGame() {
         isGameStarted = true;
+        gameLogic = new GameLogic();
 
     }
 
@@ -62,9 +85,15 @@ public class Game implements Runnable {
     public class PlayerHandler implements Runnable{
         private Socket playerSocket;
         private String name;
+        private int id;
+
         private BufferedReader reader;
         private BufferedWriter writer;
         private String message;
+
+        public void setId(int id){
+            this.id = id;
+        }
 
         public PlayerHandler(Socket playerSocket) {
             this.playerSocket = playerSocket;
@@ -91,6 +120,31 @@ public class Game implements Runnable {
             String message;
             try {
                 message = reader.readLine();
+                String[] splitted = message.split(" ");
+                switch (splitted[0]){
+                    case "name":
+                        name = splitted[1];
+                        broadCast(String.format(NEW_PLAYER_HAS_ARRIVED, name),this);
+                        sendMessageToPlayer(gameStatus(id));
+                        sendMessageToPlayer(ASK_FOR_POSITION);
+                        break;
+
+                    case "move":
+                        gameLogic.makeMove(splitted[1], id==0 ? "  O  " : "  X  ");
+                        broadCastToAllPlayers(gameStatus(id));
+                        broadCast(ASK_FOR_POSITION, this);
+                        break;
+
+                    case "quit":
+                        playerSocket.close();
+                        reader.close();
+                        writer.close();
+                        listOfPlayers.remove(id);
+                        System.out.println(listOfPlayers.size());
+                        break;
+
+                }
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -101,9 +155,12 @@ public class Game implements Runnable {
         public void run() {
             addPlayerToList(this);
             sendMessageToPlayer(ASK_FOR_NAME);
-            name = listenFromPlayer();
+            while (true) {
 
-            broadCast(String.format(NEW_PLAYER_HAS_ARRIVED, name),this);
+                listenFromPlayer();
+            }
+
+
 
 
 
