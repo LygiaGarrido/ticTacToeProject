@@ -41,18 +41,15 @@ public class Server {
 }
 
 /* TODO
-send updated board to player after each interaction:
-- after sending name -> empty board
-- after each move -> updated board
+
 
 inform player's turn (and consider only the correct player's move - in case the other player does sth wrong)
 check for winners after each move
-inform winner when there is one, and end game
-
-find a place to print the board lol (player holds the function to print board)
-
-
+end game when there is a winner or a tie
+consider tie
 inform player that other player has left
+ask for game move only after 2 players have joined the room
+check if move position is already taken and do not allow a new move over it
 
 
 
