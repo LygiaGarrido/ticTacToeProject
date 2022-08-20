@@ -57,7 +57,7 @@ public class Player {
             }
         } catch (IOException e) {
             System.out.println(DEAD_SERVER);
-            handleServer();
+            //handleServer();
         }
     }
 
@@ -65,6 +65,9 @@ public class Player {
         String message = readFromConsole();
 
         writer.write(message);
+        if(message.equals("quit")){
+            close();
+        }
         writer.newLine();
         writer.flush();
 

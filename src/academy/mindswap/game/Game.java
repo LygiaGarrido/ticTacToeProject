@@ -20,6 +20,7 @@ public class Game implements Runnable {
     private static final int NUMBER_OF_PLAYER = 2;
 
     private boolean isGameStarted ;
+    private GameLogic gameLogic;
 
 
     public Game(Server server) {
@@ -27,20 +28,38 @@ public class Game implements Runnable {
         threadPool = Executors.newFixedThreadPool(NUMBER_OF_PLAYER);
         listOfPlayers = new CopyOnWriteArrayList<>();
 
+        startGame();
+
+
     }
 
     public void acceptPlayer(Socket playerSocket){
-        threadPool.submit(new PlayerHandler(playerSocket));
+        if(listOfPlayers.size() < 2){
+            threadPool.submit(new PlayerHandler(playerSocket));
+        }
     }
 
     public void addPlayerToList(PlayerHandler playerHandler){
+        playerHandler.setId(listOfPlayers.size());
         listOfPlayers.add(playerHandler);
+
     }
 
-    public void broadCast(String message,PlayerHandler playerHandler){
+    public void broadCastToAllPlayers(String message, PlayerHandler playerHandler){
         listOfPlayers.stream()
                 .filter(player -> !playerHandler.equals(player))
                 .forEach(player ->player.sendMessageToPlayer(message));
+    }
+
+    public void gameStatus(){
+        listOfPlayers.stream().forEach(player -> {
+            try {
+                player.reader.readLine();
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public void broadCast(String message){
@@ -49,6 +68,8 @@ public class Game implements Runnable {
 
     public void startGame() {
         isGameStarted = true;
+        gameLogic = new GameLogic();
+        gameStatus();
 
     }
 
@@ -62,9 +83,15 @@ public class Game implements Runnable {
     public class PlayerHandler implements Runnable{
         private Socket playerSocket;
         private String name;
+        private int id;
+
         private BufferedReader reader;
         private BufferedWriter writer;
         private String message;
+
+        public void setId(int id){
+            this.id = id;
+        }
 
         public PlayerHandler(Socket playerSocket) {
             this.playerSocket = playerSocket;
@@ -91,6 +118,26 @@ public class Game implements Runnable {
             String message;
             try {
                 message = reader.readLine();
+                System.out.println(this.id);
+                String[] splitted = message.split(" ");
+                switch (splitted[0]){
+                    case "name":
+                        name = splitted[1];
+                        broadCastToAllPlayers(String.format(NEW_PLAYER_HAS_ARRIVED, name),this);
+                        break;
+
+                    case "move":
+                        gameLogic.makeMove(splitted[1], id==0 ? "  O  " : "  X  ");
+
+                    case "quit":
+                        playerSocket.close();
+                        reader.close();
+                        writer.close();
+                        listOfPlayers.remove(id);
+                        System.out.println(listOfPlayers.size());
+
+                }
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -101,9 +148,12 @@ public class Game implements Runnable {
         public void run() {
             addPlayerToList(this);
             sendMessageToPlayer(ASK_FOR_NAME);
-            name = listenFromPlayer();
+            while (true) {
 
-            broadCast(String.format(NEW_PLAYER_HAS_ARRIVED, name),this);
+                listenFromPlayer();
+            }
+
+
 
 
 

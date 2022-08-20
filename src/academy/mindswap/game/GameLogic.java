@@ -1,12 +1,18 @@
 package academy.mindswap.game;
 
-import academy.mindswap.player.Player;
+import java.util.Random;
+
+import static academy.mindswap.utils.Messages.*;
 
 public class GameLogic {
-    private Game.PlayerHandler player1;
-    private Game.PlayerHandler player2;
 
     private String[][] board = new String[3][3];
+
+
+    public GameLogic() {
+        createBoard();
+        checkWinner();
+    }
 
     public void createBoard(){
 
@@ -14,19 +20,20 @@ public class GameLogic {
             for (int j = 0; j < 3; j++) {
                 board[i][j] = "    ";
             }
-
         }
 
-        System.out.println();
+        /*System.out.println();
         System.out.println(board[0][0] + "|" + board[0][1] + "|" + board[0][2]);
         drawSeparator();
         System.out.println(board[1][0] + "|" + board[1][1] + "|" + board[1][2]);
         drawSeparator();
         System.out.println(board[2][0] + "|" + board[2][1] + "|" + board[2][2]);
-        System.out.println();
+        System.out.println();*/
 
     }
-
+    /*public static void drawSeparator() {
+        System.out.println("----------------");
+    }*/
     public  boolean checkWinner(){
         for (int r = 0; r < 3; r++) {
             if (board[r][0] == board[r][1] && board[r][1] == board[r][2] && board[r][0] != "-")
@@ -48,9 +55,16 @@ public class GameLogic {
 
     }
 
-    public static void drawSeparator() {
-        System.out.println("----------------");
-    }
+    public void makeMove(String userInput, String symbol){
+
+            if(userInput == null || !userInput.matches("[0-8]")){
+                System.out.println(INVALID_INPUT);
+            }
+            Integer number = Integer.parseInt(userInput);
+            board[number/3][number%3] = symbol;
+        System.out.println("inside make move"+symbol);
+        }
+
 }
 
 
