@@ -8,8 +8,7 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static academy.mindswap.utils.Messages.ASK_FOR_NAME;
-import static academy.mindswap.utils.Messages.NEW_PLAYER_HAS_ARRIVED;
+import static academy.mindswap.utils.Messages.*;
 
 
 public class Game implements Runnable {
@@ -29,8 +28,6 @@ public class Game implements Runnable {
         listOfPlayers = new CopyOnWriteArrayList<>();
 
         startGame();
-
-
     }
 
     public void acceptPlayer(Socket playerSocket){
@@ -45,21 +42,27 @@ public class Game implements Runnable {
 
     }
 
-    public void broadCastToAllPlayers(String message, PlayerHandler playerHandler){
+    public void broadCast(String message, PlayerHandler playerHandler){
         listOfPlayers.stream()
                 .filter(player -> !playerHandler.equals(player))
                 .forEach(player ->player.sendMessageToPlayer(message));
     }
+    public void broadCastToAllPlayers(String message){
+        listOfPlayers.stream().forEach(player ->player.sendMessageToPlayer(message));
+    }
 
-    public void gameStatus(){
-        listOfPlayers.stream().forEach(player -> {
-            try {
-                player.reader.readLine();
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+    public String gameStatus(int playerId){
+        StringBuilder gameStatusMessage = new StringBuilder("board");
+        String[][] x = gameLogic.getBoard();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                gameStatusMessage.append(",");
+                gameStatusMessage.append(gameLogic.getBoard()[i][j]);
             }
-        });
+        }
+        gameStatusMessage.append(",");
+        gameStatusMessage.append(gameLogic.checkWinner(playerId));
+        return gameStatusMessage.toString();
     }
 
     public void broadCast(String message){
@@ -69,7 +72,6 @@ public class Game implements Runnable {
     public void startGame() {
         isGameStarted = true;
         gameLogic = new GameLogic();
-        gameStatus();
 
     }
 
@@ -118,16 +120,20 @@ public class Game implements Runnable {
             String message;
             try {
                 message = reader.readLine();
-                System.out.println(this.id);
                 String[] splitted = message.split(" ");
                 switch (splitted[0]){
                     case "name":
                         name = splitted[1];
-                        broadCastToAllPlayers(String.format(NEW_PLAYER_HAS_ARRIVED, name),this);
+                        broadCast(String.format(NEW_PLAYER_HAS_ARRIVED, name),this);
+                        sendMessageToPlayer(gameStatus(id));
+                        sendMessageToPlayer(ASK_FOR_POSITION);
                         break;
 
                     case "move":
                         gameLogic.makeMove(splitted[1], id==0 ? "  O  " : "  X  ");
+                        broadCastToAllPlayers(gameStatus(id));
+                        broadCast(ASK_FOR_POSITION, this);
+                        break;
 
                     case "quit":
                         playerSocket.close();
@@ -135,6 +141,7 @@ public class Game implements Runnable {
                         writer.close();
                         listOfPlayers.remove(id);
                         System.out.println(listOfPlayers.size());
+                        break;
 
                 }
 
