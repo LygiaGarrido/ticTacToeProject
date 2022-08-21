@@ -10,7 +10,9 @@ import static academy.mindswap.utils.Messages.*;
 public class Server {
     private ServerSocket serverSocket;
     private Game game;
-    private static final int PORT = 8080;
+
+    private int numberOfPlayers;
+    private static final int PORT = 8081;
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -30,14 +32,22 @@ public class Server {
         System.out.println(WAITING_FOR_PLAYERS_TO_CONNECT);
         serverSocket = new ServerSocket(port);
         createGame();
-        while (serverSocket.isBound()){
-            game.acceptPlayer(serverSocket.accept());
-            System.out.println(NEW_USER_HAS_CONNECTED);
-
+        int numberOfPlayer = 0;
+        acceptPlayer();
+        if(numberOfPlayer<2){
+            acceptPlayer();
+        }
+            game.startGame();
         }
 
 
-    }
+    public void acceptPlayer() throws IOException {
+        game.acceptPlayer(serverSocket.accept());
+        numberOfPlayers++;
+        System.out.println(NEW_USER_HAS_CONNECTED);
+
+
+}
 }
 
 /* TODO

@@ -19,13 +19,14 @@ public class GameLogic {
     }
 
     public void createBoard() {
-
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                board[i][j] = "    ";
+                board[i][j] = " ";
             }
         }
     }
+
+
 
     public  int checkWinner(int playerId){
         for (int r = 0; r < 3; r++) {

@@ -27,7 +27,7 @@ public class Player {
     }
 
     private void handleServer() throws IOException {
-        connectToServer("localhost", 8080);
+        connectToServer("localhost", 8081);
 
         startListenToServer();
 
@@ -106,7 +106,7 @@ public class Player {
             }
         }
 
-        private void drawBoard(String[] position){
+     /*   private void drawBoard(String[] position){
 
             System.out.println();
             System.out.println(position[1] + "|" + position[2] + "|" + position[3]);
@@ -118,32 +118,30 @@ public class Player {
         }
         public void drawSeparator() {
             System.out.println("----------------");
-        }
+        }*/
 
         private void readMessage() throws IOException {
             //     System.out.println("reading");
             String readMessageFromServer = reader.readLine();
-            String[] splitted = readMessageFromServer.split(",");
+        /*   String[] splitted = readMessageFromServer.split(",");
 
             if(splitted[0].equals("board")){
                 drawBoard(splitted);
                 checkWinner(Integer.parseInt(splitted[10]));
-            } else {
+            } else {*/
                 System.out.println(readMessageFromServer);
+                readMessage();
             }
-            readMessage();
+
 
         }
 
-        private void checkWinner(int value){
+       /* private void checkWinner(int value){
             if(value == 0){
                 System.out.println(LOSER);
             } else if (value == 1) {
                 System.out.println(WINNER);
             }
 
-        }
+        }*/
     }
-
-
-}
