@@ -10,7 +10,9 @@ import static academy.mindswap.utils.Messages.*;
 public class Server {
     private ServerSocket serverSocket;
     private Game game;
-    private static final int PORT = 8080;
+
+    private int numberOfPlayers;
+    private static final int PORT = 8081;
 
     public static void main(String[] args) {
         Server server = new Server();
@@ -30,26 +32,32 @@ public class Server {
         System.out.println(WAITING_FOR_PLAYERS_TO_CONNECT);
         serverSocket = new ServerSocket(port);
         createGame();
-        while (serverSocket.isBound()){
-            game.acceptPlayer(serverSocket.accept());
-            System.out.println(NEW_USER_HAS_CONNECTED);
-
+        int numberOfPlayer = 0;
+        acceptPlayer();
+        if(numberOfPlayer<2){
+            acceptPlayer();
+        }
+            game.startGame();
         }
 
 
-    }
+    public void acceptPlayer() throws IOException {
+        game.acceptPlayer(serverSocket.accept());
+        numberOfPlayers++;
+        System.out.println(NEW_USER_HAS_CONNECTED);
+
+
+}
 }
 
 /* TODO
 
-
-inform player's turn (and consider only the correct player's move - in case the other player does sth wrong)
-check for winners after each move
-end game when there is a winner or a tie
-consider tie
+end game when there is a winner or a tie -> stops the game, needs to close the players socket
+after end ask to play again
 inform player that other player has left
-ask for game move only after 2 players have joined the room
-check if move position is already taken and do not allow a new move over it
+pass commands in listen for player
+
+
 
 
 
