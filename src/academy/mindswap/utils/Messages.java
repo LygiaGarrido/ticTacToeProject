@@ -22,4 +22,10 @@ public class Messages {
     public static final String THANK_YOU_FOR_PLAYING = "Thank you for playing, see you next time :)";
     public static final String THE_GAME_WILL_BEGIN_SHORTLY = "The game will begin in just a moment ..";
 
+
+
+    public static final String PLAY_AGAIN = "Wanna play again? 'Yes' to play again 'No' to exit game";
+    public static final String NO_MORE_PLAYING = " someone don't wanna play ";
+
+
 }
