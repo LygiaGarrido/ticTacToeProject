@@ -8,6 +8,7 @@ import static academy.mindswap.utils.Messages.*;
 public class GameLogic {
 
     private String[][] board = new String[3][3];
+    int numberOfPlays = 0;
 
 
     public String[][] getBoard() {
@@ -26,67 +27,63 @@ public class GameLogic {
         }
     }
 
-
-
-    public  int checkWinner(int playerId){
+    public int checkWin(Game.PlayerHandler player) {
+        numberOfPlays ++;
         for (int r = 0; r < 3; r++) {
-            if (Objects.equals(board[r][0], board[r][1])
-                    && Objects.equals(board[r][1], board[r][2])
-                    && !Objects.equals(board[r][0], "    ")){
-                if(board[r][0].equals("  X  ") && playerId == 1 || board[r][0].equals("  O  ") && playerId == 0){
-                    return 1;
-                } else {
-                    return 0;
-                }
+            if (board[r][0] == player.getPlayerMove() && board[r][1] == player.getPlayerMove() && board[r][2] == player.getPlayerMove()) {
+
+                return player.getId();
             }
-        }
-        //loops through columns checking if win-condition exists
-        for (int c = 0; c < 3; c++) {
-            if (Objects.equals(board[0][c], board[1][c])
-                    && Objects.equals(board[1][c], board[2][c])
-                    && !Objects.equals(board[0][c], "    ")){
-                if(board[0][c].equals("  X  ") && playerId == 1 || board[0][c].equals("  O  ") && playerId == 0){
-                    return 1;
-                } else {
-                    return 0;
-                }
+
+            if (board[0][r] == player.getPlayerMove() && board[1][r] == player.getPlayerMove() && board[2][r] == player.getPlayerMove()) {
+
+                return player.getId();
             }
         }
         //checks diagonals for win-condition
-        if (Objects.equals(board[0][0], board[1][1])
-                && Objects.equals(board[1][1], board[2][2])
-                && !Objects.equals(board[0][0], "    ")){
-            if(board[0][0].equals("  X  ") && playerId == 1 || board[0][0].equals("  O  ") && playerId == 0){
-                return 1;
-            } else {
-                return 0;
-            }
+        if (board[0][0] == player.getPlayerMove() && board[1][1] == player.getPlayerMove() && board[2][2] == player.getPlayerMove()) {
+
+            return player.getId();
+        }
+        if (board[0][2] == player.getPlayerMove() && board[1][1] == player.getPlayerMove() && board[2][0] == player.getPlayerMove()) {
+
+            return player.getId();
+        }
+        if(numberOfPlays > 8){
+            return 2;
+        }
+        return 3;
+    }
+
+    public void makeMove(Game.PlayerHandler player) {
+        String userInput;
+        player.sendMessageToPlayer(CHOOSE_POSITION);
+        userInput = player.listenFromPlayer();
+        if (!userInput.matches("[0-8]")) {
+            System.out.println(INVALID_INPUT);
+            player.sendMessageToPlayer(CHOOSE_POSITION);
+            userInput = player.listenFromPlayer();
         }
 
-        if (Objects.equals(board[0][2], board[1][1])
-                && Objects.equals(board[1][1], board[2][0])
-                && !Objects.equals(board[0][2], "    ")){
-            if(board[0][2].equals("  X  ") && playerId == 1 || board[0][2].equals("  O  ") && playerId == 0) {
-                return 1;
-            } else {
-                return 0;
-            }
+        if (!submitMove(userInput, player)) {
+            player.sendMessageToPlayer(CHOOSE_ANOTHER_ONE);
+            makeMove(player);
         }
 
-        return 2;
 
     }
 
-    public void makeMove(String userInput, String symbol){
 
-            if(userInput == null || !userInput.matches("[0-8]")){
-                System.out.println(INVALID_INPUT);
-            }
-            Integer number = Integer.parseInt(userInput);
-            board[number/3][number%3] = symbol;
+    public boolean submitMove(String userInput, Game.PlayerHandler player) {
+        Integer number = Integer.parseInt(userInput);
 
+        if (board[number / 3][number % 3].equalsIgnoreCase(" ")) {
+            board[number / 3][number % 3] = player.getPlayerMove();
+           // Game.broadCastToAllPlayers(drawBoard());
+            return true;
         }
-
+        return false;
+    }
 }
 
 

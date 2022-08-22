@@ -10,15 +10,14 @@ public class Messages {
     public static final String ASK_FOR_POSITION = "Where would you like to make your move?\n" +
             "Enter your move following the pattern:<move> <0-8>";
     public static final String INVALID_INPUT = "Invalid input, try again.";//, please choose a number from 0 to 8 to play."
-    public static final String LOSER = "Oh no ... you have lost :( \nBetter luck next time";
+    public static final String LOSER = "Oh no %s... you have lost :( \nBetter luck next time";
     public static final String WINNER = "CONGRATULATIONS %S YOU ARE THE WINNER!!!";
     public static final String TIE = "IT'S A TIE!!";
     public static final String ASK_PLAYER_MOVE = "Choose your player move : X  or O";
     public static final String WELCOME_TO_TICTACTOE = "WELCOME TO TICTACTOE! LETSSSS PLAY!!!";
     public static final String CHOOSE_ANOTHER_ONE = "Already taken, choose another one!";
 
-    public static final String CHOOSE_ROW = "CHOOSE ROW [0-2] :";
-    public static final String CHOOSE_COLUMN = "CHOOSE COLUMN [0-2] :";
+    public static final String CHOOSE_POSITION = "CHOOSE POSITION [0-8] :";
 
     public static final String THANK_YOU_FOR_PLAYING = "Thank you for playing, see you next time :)";
     public static final String THE_GAME_WILL_BEGIN_SHORTLY = "The game will begin in just a moment ..";

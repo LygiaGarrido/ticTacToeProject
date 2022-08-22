@@ -21,29 +21,30 @@ public class Game {
     private boolean isGameStarted;
     private int numberOfPlays = 0;
 
-    private String[][] board;
-//    private GameLogic gameLogic;
+    private GameLogic gameLogic;
 
+    private String[][] board;
 
     public Game(Server server) {
         this.server = server;
         threadPool = Executors.newFixedThreadPool(NUMBER_OF_PLAYER);
         listOfPlayers = new CopyOnWriteArrayList<>();
-        board = new String[3][3];
+        gameLogic = new GameLogic();
+        board = gameLogic.getBoard();
 
     }
 
     public void startGame() {
         isGameStarted = true;
-        //gameLogic = new GameLogic();
-        initiateBoard();
         initiatePlayers();
         broadCastToAllPlayers(WELCOME_TO_TICTACTOE);
         broadCastToAllPlayers(drawBoard());
         while (isGameStarted) {
             for (int i = 0; i < listOfPlayers.size(); i++) {
-                    doTurn(listOfPlayers.get(i));
-                    if(checkWin(listOfPlayers.get(i))){
+                PlayerHandler player = listOfPlayers.get(i);
+                    gameLogic.makeMove(player);
+                    broadCastToAllPlayers(drawBoard());
+                    if((checkWin(gameLogic.checkWin(player))) != 3){
                         endGame();
                         break;
                 }
@@ -60,89 +61,28 @@ public class Game {
         return listOfPlayers;
     }
 
-    private void initiateBoard() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                board[i][j] = " ";
-            }
-        }
-    }
 
     private String drawBoard() {
-        String bordDraw = board[0][0] + "|" + board[0][1] + "|" + board[0][2] + "\n"
-                + "_______" + "\n" + board[1][0] + "|" + board[1][1] + "|" + board[1][2] + "\n" + "______"
-                + "\n" + board[2][0] + "|" + board[2][1] + "|" + board[2][2];
+        String bordDraw = "\n" + board[0][0] + "|" + board[0][1] + "|" + board[0][2] + "\n"
+                + "______" + "\n" + board[1][0] + "|" + board[1][1] + "|" + board[1][2] + "\n" + "______"
+                + "\n" + board[2][0] + "|" + board[2][1] + "|" + board[2][2] + "\n";
         return bordDraw;
     }
 
-    private void doTurn(PlayerHandler player) {
-        String move;
-        int row;
-        int column;
-        player.sendMessageToPlayer(CHOOSE_ROW);
-        move = player.listenFromPlayer();
-        while (!move.matches("[0-2]")) {
-            player.sendMessageToPlayer(CHOOSE_ROW);
-            move = player.listenFromPlayer();
-        }
-        row = Integer.parseInt(move);
 
-        player.sendMessageToPlayer(CHOOSE_COLUMN);
-        move = player.listenFromPlayer();
-        while (!move.matches("[0-2]")) {
-            player.sendMessageToPlayer(CHOOSE_COLUMN);
-            move = player.listenFromPlayer();
-        }
-        column = Integer.parseInt(move);
-
-        if (!submitMove(row, column, player)) {
-            player.sendMessageToPlayer(CHOOSE_ANOTHER_ONE);
-            doTurn(player);
-        }
-    }
-
-
-    public boolean submitMove(int row, int column, PlayerHandler player) {
-        if (board[row][column].equalsIgnoreCase(" ")) {
-            board[row][column] = player.playerMove;
-            broadCastToAllPlayers(drawBoard());
-            return true;
-        }
-        return false;
-    }
-
-    private boolean checkWin(PlayerHandler player) {
-        numberOfPlays ++;
-        for (int r = 0; r < 3; r++) {
-            if (board[r][0] == player.playerMove && board[r][1] == player.playerMove && board[r][2] == player.playerMove) {
-                ;
-                player.sendMessageToPlayer(String.format(WINNER,player.getName()));
-                broadCast(LOSER,player);
-                return true;
-            }
-
-            if (board[0][r] == player.playerMove && board[1][r] == player.playerMove && board[2][r] == player.playerMove) {
-                player.sendMessageToPlayer(String.format(WINNER,player.getName()));
-                broadCast(LOSER,player);
-                return true;
-            }
-        }
-        //checks diagonals for win-condition
-        if (board[0][0] == player.playerMove && board[1][1] == player.playerMove && board[2][2] == player.playerMove) {
-            player.sendMessageToPlayer(String.format(WINNER,player.getName()));
-            broadCast(LOSER,player);
-            return true;
-        }
-        if (board[0][2] == player.playerMove && board[1][1] == player.playerMove && board[2][0] == player.playerMove) {
-            player.sendMessageToPlayer(String.format(WINNER, player.getName()));
-            broadCast(LOSER, player);
-            return true;
-        }
-        if(numberOfPlays > 8){
+    private int checkWin(int playerID) {
+        PlayerHandler player1 = listOfPlayers.get(0);
+        PlayerHandler player2 = listOfPlayers.get(1);
+        if(playerID == 0){
+            player1.sendMessageToPlayer(String.format(WINNER, player1.getName()));
+            player2.sendMessageToPlayer(String.format(LOSER, player2.getName()));
+        } else if(playerID == 1){
+            player2.sendMessageToPlayer(String.format(WINNER, player2.getName()));
+            player1.sendMessageToPlayer(String.format(LOSER, player1.getName()));
+        } else if (playerID == 2) {
             broadCastToAllPlayers(TIE);
-            return true;
         }
-        return false;
+        return playerID;
     }
 
 
@@ -259,6 +199,18 @@ public class Game {
             return name;
         }
 
+        public String getPlayerMove(){
+            return playerMove;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+
         public void setNameAndPlayerMove() {
             sendMessageToPlayer(ASK_FOR_NAME);
             name = listenFromPlayer();
@@ -269,7 +221,7 @@ public class Game {
             }
 
             sendMessageToPlayer(ASK_PLAYER_MOVE);
-            playerMove = listenFromPlayer();
+            playerMove = listenFromPlayer().toUpperCase();
             while (!playerMove.matches("[(X|O)]")) {
                 sendMessageToPlayer(INVALID_INPUT);
                 sendMessageToPlayer(ASK_PLAYER_MOVE);
@@ -289,6 +241,7 @@ public class Game {
         public void run() {
             sendMessageToPlayer(WAITING_FOR_OPPONENT);
             addPlayerToList(this);
+            setId(listOfPlayers.size()-1);
            /* sendMessageToPlayer(ASK_FOR_NAME);
             name = listenFromPlayer();
             while (!name.matches("[a-zA-Z]+")) {
