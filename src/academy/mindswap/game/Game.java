@@ -3,6 +3,7 @@ package academy.mindswap.game;
 import academy.mindswap.server.Server;
 
 
+import javax.sound.midi.Soundbank;
 import java.io.*;
 import java.net.Socket;
 import java.util.*;
@@ -19,6 +20,8 @@ public class Game {
     private static final int NUMBER_OF_PLAYER = 2;
 
     private boolean isGameStarted;
+    private boolean isFirstGame;
+
     private int numberOfPlays = 0;
 
     private GameLogic gameLogic;
@@ -31,30 +34,58 @@ public class Game {
         listOfPlayers = new CopyOnWriteArrayList<>();
         gameLogic = new GameLogic();
         board = gameLogic.getBoard();
+        isFirstGame = true;
 
     }
 
     public void startGame() {
         isGameStarted = true;
-        initiatePlayers();
+
+        if( isFirstGame  ) {
+        isFirstGame =false;
+            initiatePlayers();
+        }
+
         broadCastToAllPlayers(WELCOME_TO_TICTACTOE);
         broadCastToAllPlayers(drawBoard());
+
         while (isGameStarted) {
+
             for (int i = 0; i < listOfPlayers.size(); i++) {
                 PlayerHandler player = listOfPlayers.get(i);
                     gameLogic.makeMove(player);
                     broadCastToAllPlayers(drawBoard());
                     if((checkWin(gameLogic.checkWin(player))) != 3){
-                        endGame();
+                        isGameStarted =false;
                         break;
                 }
             }
         }
-        broadCastToAllPlayers(THANK_YOU_FOR_PLAYING);
+        playAgain();
+    }
+    public void playAgain(){
+
+        broadCastToAllPlayers(PLAY_AGAIN);
+        PlayerHandler player1 = listOfPlayers.get(0);
+        PlayerHandler player2 = listOfPlayers.get(1);
+
+        if(player1.listenFromPlayer().equalsIgnoreCase("Yes") && player2.listenFromPlayer().equalsIgnoreCase("Yes")){
+            gameLogic.createBoard();
+            startGame();
+        }
+        if (player1.listenFromPlayer().equalsIgnoreCase("No") || player2.listenFromPlayer().equalsIgnoreCase("No")){
+            broadCastToAllPlayers(NO_MORE_PLAYING);
+            endGame();
+        }
+
     }
 
     public void endGame(){
-        isGameStarted = false;
+        broadCastToAllPlayers(THANK_YOU_FOR_PLAYING);
+
+        for (int i = 0; i <listOfPlayers.size() ; i++) {
+            listOfPlayers.get(i).closeSocket();
+        }
     }
 
     public synchronized List<PlayerHandler> getListOfPlayers() {
@@ -242,34 +273,19 @@ public class Game {
             sendMessageToPlayer(WAITING_FOR_OPPONENT);
             addPlayerToList(this);
             setId(listOfPlayers.size()-1);
-           /* sendMessageToPlayer(ASK_FOR_NAME);
-            name = listenFromPlayer();
-            while (!name.matches("[a-zA-Z]+")) {
-                sendMessageToPlayer(INVALID_INPUT);
-                sendMessageToPlayer(ASK_FOR_NAME);
-                name = listenFromPlayer();
-            }
-            sendMessageToPlayer(ASK_PLAYER_MOVE);
-            playerMove = listenFromPlayer();
-            while (!playerMove.matches("[(X|O)]")) {
-                sendMessageToPlayer(INVALID_INPUT);
-                sendMessageToPlayer(ASK_PLAYER_MOVE);
-                playerMove = listenFromPlayer();
-            }
 
-            readyToStart = true;
-
-            broadCast(String.format(NEW_PLAYER_HAS_ARRIVED, name),this);
-
-            if (listOfPlayers.size() < 2) {
-                sendMessageToPlayer(WAITING_FOR_PLAYERS_TO_CONNECT);
-            }
-            */
             while (true) {
                 if (Thread.interrupted()) {
                     return;
                 }
 
+            }
+        }
+        private void closeSocket(){
+            try {
+                playerSocket.close();
+            }catch (IOException e){
+                throw new RuntimeException(e);
             }
         }
     }
