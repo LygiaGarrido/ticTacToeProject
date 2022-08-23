@@ -11,6 +11,32 @@ import java.util.concurrent.*;
 
 import static academy.mindswap.utils.Messages.*;
 
+/**
+ *
+ * The Game Class is a fundamental part of the Tic-Tac-Toe Project
+ *
+ * The software was developed as a group project for the MindSwap program.
+ *
+ * Copyright 2022 Lygia Garrido, Tiago Costa and Rui Vieira
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ *This Class implements the interface Runnable
+ * It holds the game logic for both single and multiplayer modes,
+ * and has the necessary methods to run each of them accordingly.
+ */
 
 public class Game implements Runnable {
 
@@ -32,6 +58,14 @@ public class Game implements Runnable {
 
     private static String[][] board;
 
+    /**
+     * This constructor method is used in case of multiplayer mode.
+     * It takes a list of players and the server to establish the connection.
+     * It instantiates the necessary parameters to run the multiplayer game logic.
+     *
+     * @param server
+     * @param listOfPlayers
+     */
     public Game(Server server, PlayerHandler[] listOfPlayers) {
         this.server = server;
         this.listOfPlayers = listOfPlayers;
@@ -44,6 +78,15 @@ public class Game implements Runnable {
 
     }
 
+    /**
+     * This constructor method is used in case of single player mode.
+     * It takes one player and the server to establish the connection.
+     * It instantiates the necessary parameters to run the single player game logic.
+     *
+     *
+     * @param server
+     * @param player
+     */
     public Game(Server server, PlayerHandler player) {
         this.server = server;
         gameLogic = new GameLogic();
@@ -55,7 +98,11 @@ public class Game implements Runnable {
         isSinglePlayer = true;
     }
 
-
+    /**
+     * This method checks if it is the first game and also which mode is being played.
+     * It starts the game according to the mode.
+     * When the games are over, it calls the playAgain() method.
+     */
     public void startGame() {
         isGameStarted = true;
 
@@ -79,6 +126,10 @@ public class Game implements Runnable {
          playAgain();
     }
 
+    /**
+     * This is the logic to start the multiplayer mode.
+     * it asks for players' moves and checks for winner after each iteration
+     */
     private void multiPlayerStart() {
         for (int i = 0; i < listOfPlayers.length; i++) {
             PlayerHandler player = listOfPlayers[i];
@@ -90,7 +141,10 @@ public class Game implements Runnable {
             }
         }
     }
-
+    /**
+     * This is the logic to start the single player mode.
+     * It asks for player's and bot moves, and checks for winners after each round.
+     */
     private void singlePlayerStart() {
         gameLogic.makeMove(player1);
         player1.sendMessageToPlayer(drawBoard());
@@ -107,6 +161,14 @@ public class Game implements Runnable {
 
     }
 
+    /**
+     * This method sends a message by the end of the matches to check whether the player
+     * wants to play another round or to disconnect.
+     * If the player wishes to play, it calls the startGame() method.
+     * If there is a negative response from the player, it ends the connection with the player.
+     * In case only one of the players wishes to continue playing,
+     * the server looks for a new opponent before starting a new game.
+     */
     public void playAgain() {
 
         if (isSinglePlayer) {
@@ -180,14 +242,21 @@ public class Game implements Runnable {
 
         }
 
-
+    /**
+     * The endGame() method closes the connection with a given player.
+     *
+     * @param player
+     */
     public void endGame(PlayerHandler player) {
         player.sendMessageToPlayer(THANK_YOU_FOR_PLAYING);
         player.closeSocket();
 
     }
 
-
+    /**
+     * This method draws the board for the player
+     * @return String
+     */
     private String drawBoard() {
 
         String bordDraw =
@@ -213,6 +282,10 @@ public class Game implements Runnable {
         return bordDraw;
     }
 
+    /**
+     * This is the method responsible for drawing the score board.
+     * @return String
+     */
     private String drawScoreBoard(){
 
         String player2Name = null;
@@ -240,7 +313,11 @@ public class Game implements Runnable {
       return scoreBoard;
     }
 
-
+    /**
+     * This is the logic to deal with the messages in case of winners/losers/tie
+     * @param playerID
+     * @return int playerID
+     */
     private int checkWin(int playerID) {
         PlayerHandler player1 = listOfPlayers[0];
         PlayerHandler player2 = listOfPlayers[1];
@@ -258,6 +335,11 @@ public class Game implements Runnable {
         return playerID;
     }
 
+    /**
+     * This is the logic to deal with the messages in case of winners/losers/tie
+     * when in single player mode
+     */
+
     private int checkSinglePlayerWin(int playerID){
         if(playerID == 0){
             player1.sendMessageToPlayer(String.format(WINNER, player1.getName()));
@@ -272,6 +354,11 @@ public class Game implements Runnable {
         return playerID;
     }
 
+    /**
+     * The method asks for players to set their move symbol,
+     * sends a welcome message and draws the board for the players
+     * In case of multiplayer, it checks if the move symbol has already been chosen.
+     */
     public void initiatePlayers() {
         if(isSinglePlayer){
             player1.setPlayerMove();
@@ -293,18 +380,30 @@ public class Game implements Runnable {
 
     }
 
-
+    /**
+     * Method to send messages from player to player
+     * @param message
+     * @param playerHandler
+     */
     public void broadCast(String message, PlayerHandler playerHandler) {
         Arrays.stream(listOfPlayers)
                 .filter(player -> !playerHandler.equals(player))
                 .forEach(player -> player.sendMessageToPlayer(message));
     }
 
+    /**
+     * This method broadcasts the message from the server/game to all players at once.
+     * It can only be used in multiplayer mode.
+     * @param message
+     */
     public void broadCastToAllPlayers(String message) {
         Arrays.stream(listOfPlayers)
                 .forEach(player -> player.sendMessageToPlayer(message));
     }
 
+    /**
+     * override of the run() method, calls the startGame() method.
+     */
     @Override
     public void run() {
         startGame();

@@ -5,6 +5,29 @@ import java.net.Socket;
 
 import static academy.mindswap.utils.Colors.*;
 import static academy.mindswap.utils.Messages.*;
+/**
+ *
+ * The PlayerHandler Class is a fundamental part of the Tic-Tac-Toe Project
+ *
+ * The software was developed as a group project for the MindSwap program.
+ *
+ * Copyright 2022 Lygia Garrido, Tiago Costa and Rui Vieira
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * The Player Handler class holds the methods to handle the players connected to the server
+ */
 
 public class PlayerHandler {
 
@@ -22,6 +45,10 @@ public class PlayerHandler {
     private String message;
     private boolean isPlaying;
 
+    /**
+     * The constructor method which initializes some parameters.
+     * @param playerSocket
+     */
     public PlayerHandler(Socket playerSocket) {
         this.playerSocket = playerSocket;
         try {
@@ -33,6 +60,11 @@ public class PlayerHandler {
 
     }
 
+    /**
+     * This method sends a given message to the player.
+     *
+     * @param message
+     */
     public void sendMessageToPlayer(String message) {
         try {
             writer.write(message);
@@ -43,7 +75,10 @@ public class PlayerHandler {
         }
     }
 
-
+    /**
+     * This method reads the player's input and returns the message as a string.
+     * @return
+     */
 
     public String listenFromPlayer() {
         String message;
@@ -67,6 +102,10 @@ public class PlayerHandler {
         isPlaying = false;
     }
 
+    /**
+     * This method allows the player to set their name in the beginning of the interactions with the server.
+     * It ends the connection if the input is null
+     */
     public void setName() {
         sendMessageToPlayer(ASK_FOR_NAME);
         name = listenFromPlayer();
@@ -80,6 +119,10 @@ public class PlayerHandler {
         }
     }
 
+    /**
+     * This method asks for input from player to choose the move symbol.
+     * It validates the input and sets the color for each symbol.
+     */
     public void setPlayerMove() {
         sendMessageToPlayer(ASK_PLAYER_MOVE);
         playerMove = listenFromPlayer().toUpperCase();
@@ -95,9 +138,6 @@ public class PlayerHandler {
             playerMove = TEXT_CYAN + playerMove + TEXT_RESET;
         }
     }
-
-
-
 
     public String getName () {
         return name;
@@ -130,6 +170,9 @@ public class PlayerHandler {
         score++;
     }
 
+    /**
+     * This ends the connection between player and server
+     */
     public void closeSocket() {
         try {
             playerSocket.close();
