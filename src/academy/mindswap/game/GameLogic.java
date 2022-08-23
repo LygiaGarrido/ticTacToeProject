@@ -27,7 +27,7 @@ public class GameLogic {
         }
     }
 
-    public int checkWin(Game.PlayerHandler player) {
+    public int checkWin(PlayerHandler player) {
         numberOfPlays ++;
         for (int r = 0; r < 3; r++) {
             if (board[r][0] == player.getPlayerMove() && board[r][1] == player.getPlayerMove() && board[r][2] == player.getPlayerMove()) {
@@ -55,7 +55,7 @@ public class GameLogic {
         return 3;
     }
 
-    public void makeMove(Game.PlayerHandler player) {
+    public void makeMove(PlayerHandler player) {
         String userInput;
         player.sendMessageToPlayer(CHOOSE_POSITION);
         userInput = player.listenFromPlayer();
@@ -73,17 +73,16 @@ public class GameLogic {
 
     }
 
-
-    public boolean submitMove(String userInput, Game.PlayerHandler player) {
+    public boolean submitMove(String userInput, PlayerHandler player) {
         Integer number = Integer.parseInt(userInput);
 
         if (board[number / 3][number % 3].equalsIgnoreCase(" ")) {
             board[number / 3][number % 3] = player.getPlayerMove();
-           // Game.broadCastToAllPlayers(drawBoard());
             return true;
         }
         return false;
     }
+
     public void fillBoard(int num){
         board[num / 3][num % 3] = "O";
     }
