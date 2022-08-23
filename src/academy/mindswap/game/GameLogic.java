@@ -84,6 +84,10 @@ public class GameLogic {
         }
         return false;
     }
+    public void fillBoard(int num){
+        board[num / 3][num % 3] = "O";
+    }
+
 }
 
 
