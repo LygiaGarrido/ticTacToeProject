@@ -1,15 +1,27 @@
 package academy.mindswap.game;
 
+import static academy.mindswap.utils.Colors.*;
+
 public class SinglePlayer {
-    int numberOfPlays = 0;
-    int res1 = -1;
+    int numberOfPlays;
+    int res1;
 
-    public int botMovement(String[][] board){
+    int score;
 
-         res1 = botMovementToDefendOrWin(board, "O");
+    String playMove;
+
+    public SinglePlayer() {
+        this.numberOfPlays = 0;
+        this.res1 = -1;
+        this.score = 0;
+    }
+
+    public int botMovement(String[][] board, PlayerHandler player){
+        String playerMove = player.getPlayerMove();
+         res1 = botMovementToDefendOrWin(board, playMove);
 
         if(res1 == -1){
-            int res2 = botMovementToDefendOrWin(board, "X");
+            int res2 = botMovementToDefendOrWin(board, playerMove);
 
             if( res2 == -1){
                 return chooseRandomEmptyPosition(board);
@@ -195,5 +207,30 @@ public class SinglePlayer {
     }
     public void resetNumberOfPlays(){
         numberOfPlays = 0;
+    }
+
+    public void setPlayMove(PlayerHandler player){
+        if (player.getPlayerMove().equals(TEXT_RED + "X" + TEXT_RESET)){
+            this.playMove = TEXT_CYAN + "O" + TEXT_RESET;
+            return;
+        }
+        this.playMove = TEXT_RED + "X" + TEXT_RESET;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore() {
+        score ++;
+    }
+
+    public String getPlayMove() {
+        return playMove;
+    }
+
+
+    public void resetPlayBOT(){
+        res1=-1;
     }
 }

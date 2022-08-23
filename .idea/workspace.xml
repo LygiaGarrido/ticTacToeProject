@@ -5,10 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="573779c3-0ec0-475f-b94e-13a99a674b1e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/academy/mindswap/game/PlayerHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/academy/mindswap/utils/Colors.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/Game.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/GameLogic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/GameLogic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/PlayerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/PlayerHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/game/SinglePlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/game/SinglePlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/player/Player.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/server/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/server/Server.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/academy/mindswap/utils/Messages.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/academy/mindswap/utils/Messages.java" afterDir="false" />
     </list>
@@ -27,17 +30,10 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="Tiago_multiple_games" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="GithubProjectSettings">
-    <option name="branchProtectionPatterns">
-      <list>
-        <option value="master" />
-      </list>
-    </option>
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/src/academy/mindswap/game/Game.java" root0="FORCE_HIGHLIGHTING" />
@@ -191,6 +187,11 @@
             </State>
           </value>
         </entry>
+        <entry key="fff918f9-f405-47fd-a602-236ae23c8201">
+          <value>
+            <State />
+          </value>
+        </entry>
       </map>
     </option>
   </component>
@@ -207,12 +208,24 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/academy/mindswap/player/Player.java</url>
+          <line>10</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/academy/mindswap/server/Server.java</url>
-          <line>112</line>
-          <properties>
-            <option name="lambda-ordinal" value="-1" />
-          </properties>
-          <option name="timeStamp" value="3" />
+          <line>52</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/academy/mindswap/game/Game.java</url>
+          <line>281</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/academy/mindswap/game/Game.java</url>
+          <line>287</line>
+          <option name="timeStamp" value="16" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static academy.mindswap.utils.Messages.*;
 
@@ -17,8 +19,7 @@ public class Server {
     private Game game;
 
     private List<PlayerHandler> playerList;
-
-    //  private int numberOfPlayers;
+    private ExecutorService threadPool;
     private static final int PORT = 8081;
 
     public static void main(String[] args) {
@@ -40,21 +41,13 @@ public class Server {
         System.out.println(WAITING_FOR_PLAYERS_TO_CONNECT);
         serverSocket = new ServerSocket(port);
         playerList = new ArrayList<PlayerHandler>();
+        threadPool = Executors.newCachedThreadPool();
         acceptPlayer();
-        //createGame();
-        //int numberOfPlayer = 0;
 
-        //if(numberOfPlayer<2){
-        //     acceptPlayer();
-        // }
-        //      game.startGame();
-        // }
     }
 
     public void acceptPlayer() throws IOException {
-       /* game.acceptPlayer(serverSocket.accept());
-        numberOfPlayers++;
-        System.out.println(NEW_USER_HAS_CONNECTED);*/
+
 
 
         try {
@@ -85,8 +78,9 @@ public class Server {
                 acceptPlayer();
             } else {
                 System.out.println(STARTING_A_NEW_GAME);
+                playerHandler.startGame();
                 Game game = new Game(this, playerHandler);
-                new Thread(game).start();
+                threadPool.execute(game);
                 playerHandler.startGame();
                 acceptPlayer();
             }
@@ -112,7 +106,7 @@ public class Server {
         if(playerArray[1] != null) {
             Arrays.stream(playerArray).forEach(player -> player.sendMessageToPlayer(STARTING_A_NEW_GAME));
             Game game = new Game(this, playerArray);
-            new Thread(game).start();
+            threadPool.execute(game);
             Arrays.stream(playerArray).forEach(PlayerHandler::startGame);
         }
 
@@ -122,13 +116,6 @@ public class Server {
 
 /* TODO
 
-end game when there is a winner or a tie -> stops the game, needs to close the players socket
-after end ask to play again
 inform player that other player has left
-pass commands in listen for player
-
-
-
-
 
  */

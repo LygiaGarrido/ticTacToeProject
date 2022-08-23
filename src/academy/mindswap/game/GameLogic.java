@@ -91,8 +91,9 @@ public class GameLogic {
         return false;
     }
 
-    public void fillBoard(int num){
-        board[num / 3][num % 3] = "O";
+    public void fillBoard(int num, SinglePlayer singlePlayer){
+
+        board[num / 3][num % 3] = singlePlayer.playMove;
     }
 
 }
