@@ -1,17 +1,23 @@
 
 # TicTacToeProject                                                                        
 
-This is our MindSwap Project.
-The objective of this project is the development of a project in a team context within the MindSwap academy where we develop a team tic-tac-toe to develop the project from scratch using the acquired knowledge and tools and acquire more until its presentation.
+  This project aims to improve programming skills in a team context within the MindSwap academy, where we developed a tic-tac-toe in java programming language that we created from scratch using the acquired knowledge and tools and problem solving until its presentation.
+
+
+## How to Play Tic Tac Toe?
+
+To play tic tac toe, you need a standard playing board and nine pieces. You start out by placing the X's and O's on the board. Then, you place the pieces on the board starting from the top left corner and move down and across until you reach the bottom right corner. Once you have placed all of the pieces, you take turns removing a piece from the board. Whoever removes the last piece wins!
 
 ## What does the app do?
-...
+
+
+```
 > Connects clients and Server
 > Server is able to run several games in parallel
 > Allow player between single  or multiplayer mode
 > Check for victories
 > Allows player to choose , by the end of the game ,whether they want play or not
-...
+```
 
 ### Prerequisites
 
@@ -42,21 +48,20 @@ The things you need before run this project
 ```
 > Players choose single/multiplayer
 > Player chooses “X” or “O”
-```
-
-
-
-```
-> “Let the games begin!”
+> “Let the ames begin!”
 > Game ends and presents winner/loser (or considers a tie) and asks if players want to play again
 > Either the game starts or the connection is ended.
 
 ```
 
+![tiktak](https://user-images.githubusercontent.com/108727621/186273758-7b8ae4e9-b52b-4635-b7e3-9dcb327c38a6.png)
 
+## collaborators
 
-![unnamed (3)](https://user-images.githubusercontent.com/108727621/186269380-7c6a923b-9d84-4277-ad18-e6fa53c15e82.png)
-![unnamed (2)](https://user-images.githubusercontent.com/108727621/186269381-28f7cfdc-951f-4cf8-b7df-cf6c1bc89e1c.png)
-![unnamed (1)](https://user-images.githubusercontent.com/108727621/186269383-acabdb7b-2194-4680-9558-b53310f492fb.png)
+Lygia ( https://github.com/LygiaGarrido)
+
+Tiago ( https://github.com/tiagocncosta)
+
+Rui   (https://github.com/Rui-Vieira)
 
 
