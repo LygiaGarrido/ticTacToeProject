@@ -1,4 +1,7 @@
+
 package academy.mindswap.utils;
+
+import static academy.mindswap.utils.Colors.*;
 
 public class Messages {
     public static final String STARTING_A_NEW_GAME = "A new opponent connect, the game is about to start !";
@@ -17,10 +20,28 @@ public class Messages {
             "Enter your move following the pattern:<move> <0-8>";
     public static final String INVALID_INPUT = "Invalid input, try again.";//, please choose a number from 0 to 8 to play."
     public static final String LOSER = "Oh no %s... you have lost :( \nBetter luck next time";
-    public static final String WINNER = "CONGRATULATIONS %S YOU ARE THE WINNER!!!";
+    public static final String WINNER = TEXT_YELLOW + ("___________\n" +
+            "            '._==_==_=_.'\n" +
+            "            .-\\:      /-.\n" +
+            "           | (|:.     |) |\n" +
+            "            '-|:.     |-'\n" +
+            "              \\::.    /\n" +
+            "               '::. .'\n" +
+            "                 ) (\n" +
+            "               _.' '._\n" +
+            "              `\"\"\"\"\"\"\"`\n"+"\n CONGRATULATIONS %S YOU ARE THE WINNER!!!") + TEXT_RESET;
     public static final String TIE = "IT'S A TIE!!";
     public static final String ASK_PLAYER_MOVE = "Choose your player move : X  or O";
-    public static final String WELCOME_TO_TICTACTOE = "WELCOME TO TICTACTOE! LETSSSS PLAY!!!";
+    public static final String WELCOME_TO_TICTACTOE = TEXT_YELLOW + ("\n" +
+            "█░█░█ █▀▀ █░░ █▀▀ █▀█ █▀▄▀█ █▀▀\n" +
+            "▀▄▀▄▀ ██▄ █▄▄ █▄▄ █▄█ █░▀░█ ██▄\n" +
+            "\n" +
+            "▀█▀ █▀█  \n" +
+            "░█░ █▄█  \n" +
+            "\n" +
+            "▀█▀ █ █▀▀ ▄▄ ▀█▀ ▄▀█ █▀▀ ▄▄ ▀█▀ █▀█ █▀▀\n" +
+            "░█░ █ █▄▄ ░░ ░█░ █▀█ █▄▄ ░░ ░█░ █▄█ ██▄")+ TEXT_RESET;
+
     public static final String CHOOSE_ANOTHER_ONE = "Already taken, choose another one!";
 
     public static final String CHOOSE_POSITION = "CHOOSE POSITION [0-8] :";
@@ -28,10 +49,10 @@ public class Messages {
     public static final String THANK_YOU_FOR_PLAYING = "Thank you for playing, see you next time :)";
     public static final String THE_GAME_WILL_BEGIN_SHORTLY = "The game will begin in just a moment ..";
 
-    public static final String PLAY_AGAIN = "Wanna play again? 'Yes' to play again 'No' to exit game";
-    public static final String NO_MORE_PLAYING = " someone doesn't wanna play ";
+    public static final String PLAY_AGAIN = "Wanna play again? 'Y' to play again 'N' to exit game";
+    public static final String NO_MORE_PLAYING = " someone don't wanna play ";
 
-    public static final String BOT_WINS = "HAHAHA I AM THE SMARTEST!\nYou have lost this match! Maybe next time...";
+    public static final String BOT_WINS = "BOT : HAHAHA I'm the smartest";
 
 
 }

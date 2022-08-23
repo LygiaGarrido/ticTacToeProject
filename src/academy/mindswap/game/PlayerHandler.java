@@ -3,6 +3,7 @@ package academy.mindswap.game;
 import java.io.*;
 import java.net.Socket;
 
+import static academy.mindswap.utils.Colors.*;
 import static academy.mindswap.utils.Messages.*;
 
 public class PlayerHandler {
@@ -11,6 +12,8 @@ public class PlayerHandler {
     private Socket playerSocket;
     private String name;
     private int id;
+
+    private int score;
 
     private String playerMove;
 
@@ -39,6 +42,8 @@ public class PlayerHandler {
             throw new RuntimeException(e);
         }
     }
+
+
 
     public String listenFromPlayer() {
         String message;
@@ -85,6 +90,9 @@ public class PlayerHandler {
     public void setName() {
         sendMessageToPlayer(ASK_FOR_NAME);
         name = listenFromPlayer();
+        if(name == null){
+            closeSocket();
+        }
         while (!name.matches("[a-zA-Z]+")) {
             sendMessageToPlayer(INVALID_INPUT);
             sendMessageToPlayer(ASK_FOR_NAME);
@@ -99,6 +107,12 @@ public class PlayerHandler {
             sendMessageToPlayer(INVALID_INPUT);
             sendMessageToPlayer(ASK_PLAYER_MOVE);
             playerMove = listenFromPlayer();
+        }
+        if(playerMove.equals("X")){
+            playerMove = TEXT_RED + playerMove + TEXT_RESET;
+        }
+        if(playerMove.equals("O")){
+            playerMove = TEXT_CYAN + playerMove + TEXT_RESET;
         }
     }
 
@@ -127,6 +141,15 @@ public class PlayerHandler {
         }
         return playerSocket.isClosed();
     }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore() {
+        score++;
+    }
+
     public void closeSocket() {
         try {
             playerSocket.close();
@@ -135,5 +158,4 @@ public class PlayerHandler {
         }
     }
 }
-
 

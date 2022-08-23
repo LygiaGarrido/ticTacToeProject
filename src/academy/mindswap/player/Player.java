@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 import static academy.mindswap.utils.Messages.*;
 
 public class Player {
-    public boolean isPlayerTurn;
     private Socket socket;
     private BufferedWriter writer;
     private BufferedReader reader;
@@ -57,7 +56,6 @@ public class Player {
             }
         } catch (IOException e) {
             System.out.println(DEAD_SERVER);
-            //handleServer();
         }
     }
 
@@ -75,16 +73,6 @@ public class Player {
         message = consoleReader.nextLine();
 
         return message;
-    }
-
-    private void close() {
-        try {
-            System.out.println("Closing socket");
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
     }
 
     private class ServerListener implements Runnable {

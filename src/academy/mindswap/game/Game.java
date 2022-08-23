@@ -65,7 +65,6 @@ public class Game implements Runnable {
         }
 
        if(isSinglePlayer){
-           player1.sendMessageToPlayer(drawBoard());
            while(isGameStarted){
                singlePlayerStart();
            }
@@ -99,7 +98,7 @@ public class Game implements Runnable {
             isGameStarted = false;
             return;
         }
-        gameLogic.fillBoard(singlePlayer.botMovement(board));
+        gameLogic.fillBoard(singlePlayer.botMovement(board, player1), singlePlayer);
         player1.sendMessageToPlayer(drawBoard());
         if(checkSinglePlayerWin(singlePlayer.singlePlayerCheckWin(board, player1)) != 3){
             isGameStarted = false;
@@ -108,29 +107,45 @@ public class Game implements Runnable {
 
     }
 
-    public void playAgain() {//ver default henrique
+    public void playAgain() {
         if(isSinglePlayer){
         player1.sendMessageToPlayer(PLAY_AGAIN);
-        if (player1.listenFromPlayer().equalsIgnoreCase("Yes")){
+        String player1Response = player1.listenFromPlayer();
+        while (!player1Response.matches("[(yY|nN)]")) {
+            player1.sendMessageToPlayer(INVALID_INPUT);
+            player1Response = player1.listenFromPlayer();
+            }
+        if (player1Response.equalsIgnoreCase("Y")){
             singlePlayer.resetNumberOfPlays();
-        gameLogic.createBoard();
-        startGame();
-        }
-         if (player1.listenFromPlayer().equalsIgnoreCase("No")){
+            gameLogic.createBoard();
+            singlePlayer.resetPlayBOT();
+            player1.sendMessageToPlayer(drawBoard());
+            startGame();
 
+        }
+         if (player1Response.equalsIgnoreCase("N")){
         endGame();
     }
          return;
 }
         broadCastToAllPlayers(PLAY_AGAIN);
-
-        if (player1.listenFromPlayer().equalsIgnoreCase("Yes")
-                && player2.listenFromPlayer().equalsIgnoreCase("Yes")) {
+        String player1Response = player1.listenFromPlayer();
+        while (!player1Response.matches("[(yY|nN)]")) {
+            player1.sendMessageToPlayer(INVALID_INPUT);
+            player1Response = player1.listenFromPlayer();
+        }
+        String player2Response = player2.listenFromPlayer();
+        while (!player2Response.matches("[(yY|nN)]")) {
+            player2.sendMessageToPlayer(INVALID_INPUT);
+            player2Response = player2.listenFromPlayer();
+        }
+        if (player1Response.equalsIgnoreCase(player2Response)){
             gameLogic.createBoard();
+            broadCastToAllPlayers(drawBoard());
             startGame();
         }
-        if (player1.listenFromPlayer().equalsIgnoreCase("No")
-                || player2.listenFromPlayer().equalsIgnoreCase("No")) {
+        if (player1Response.equalsIgnoreCase("N")
+                || player2Response.equalsIgnoreCase("N")) {
             broadCastToAllPlayers(NO_MORE_PLAYING);
             endGame();
         }
@@ -152,25 +167,55 @@ public class Game implements Runnable {
 
 
     private String drawBoard() {
-        String bordDraw = "\n" + "    0   1   2 "
-                + "\n" + "  ┌───┬───┬───┐"
-                + "\n  | "
-                + board[0][0] + " | "
-                + board[0][1] + " | "
-                + board[0][2] + " | "
-                + "\n" + "  ├───┼───┼───┤"
-                + "\n3 |"
-                + board[1][0] + "  | "
-                + board[1][1] + " | "
-                + board[1][2] + " | 5"
-                + "\n" + "  ├───┼───┼───┤"
-                + "\n  |"
-                + board[2][0] + "  | "
-                + board[2][1] + " | "
-                + board[2][2] + " | "
-                + "\n" + "  └───┴───┴───┘"
-                + "\n" + "    6   7   8   ";
+
+        String bordDraw =
+                        drawScoreBoard()
+                        + "    0   1   2 "
+                        + "\n" + "  ┌───┬───┬───┐"
+                        + "\n  | "
+                        + board[0][0] + " | "
+                        + board[0][1] + " | "
+                        + board[0][2] + " | "
+                        + "\n" + "  ├───┼───┼───┤"
+                        + "\n3 | "
+                        + board[1][0] + " | "
+                        + board[1][1] + " | "
+                        + board[1][2] + " | 5"
+                        + "\n" + "  ├───┼───┼───┤"
+                        + "\n  | "
+                        + board[2][0] + " | "
+                        + board[2][1] + " | "
+                        + board[2][2] + " | "
+                        + "\n" + "  └───┴───┴───┘"
+                        + "\n" + "    6   7   8   ";
         return bordDraw;
+    }
+
+    private String drawScoreBoard(){
+
+        String player2Name = null;
+        int player2Score = 0;
+
+        if(!isSinglePlayer) {
+            player2Name = player2.getName();
+            player2Score = player2.getScore();
+        }
+
+        if(isSinglePlayer){
+            player2Name = "Bot";
+            player2Score = singlePlayer.getScore();
+        }
+
+        String scoreBoard =
+                        "   ┌──────────┐\n" +
+                        "    SCOREBOARD\n" +
+                        "   └──────────┘\n" +
+                        "───────────────\n" +
+                        player1.getName() + " : " + player1.getScore() + "\n"
+                        + "───────────────\n"
+                        + player2Name+ " : " + player2Score + "\n"
+                        + "───────────────\n";
+      return scoreBoard;
     }
 
 
@@ -179,9 +224,11 @@ public class Game implements Runnable {
         PlayerHandler player2 = listOfPlayers[1];
         if (playerID == 0) {
             player1.sendMessageToPlayer(String.format(WINNER, player1.getName()));
+            player1.setScore();
             player2.sendMessageToPlayer(String.format(LOSER, player2.getName()));
         } else if (playerID == 1) {
             player2.sendMessageToPlayer(String.format(WINNER, player2.getName()));
+            player2.setScore();
             player1.sendMessageToPlayer(String.format(LOSER, player1.getName()));
         } else if (playerID == 2) {
             player1.sendMessageToPlayer(TIE);
@@ -192,8 +239,11 @@ public class Game implements Runnable {
     private int checkSinglePlayerWin(int playerID){
         if(playerID == 0){
             player1.sendMessageToPlayer(String.format(WINNER, player1.getName()));
+            player1.setScore();
         } else if (playerID == 1) {
-            player1.sendMessageToPlayer(String.format(BOT_WINS));
+            player1.sendMessageToPlayer(BOT_WINS);
+            singlePlayer.setScore();
+            player1.sendMessageToPlayer(String.format(LOSER, player1.getName()));
         } else if (playerID == 2) {
             player1.sendMessageToPlayer(TIE);
         }
@@ -203,6 +253,7 @@ public class Game implements Runnable {
     public void initiatePlayers() {
         if(isSinglePlayer){
             player1.setPlayerMove();
+            singlePlayer.setPlayMove(player1);
             player1.sendMessageToPlayer(WELCOME_TO_TICTACTOE);
             player1.sendMessageToPlayer(drawBoard());
         } else{
@@ -219,6 +270,7 @@ public class Game implements Runnable {
         }
 
     }
+
 
     public void broadCast(String message, PlayerHandler playerHandler) {
         Arrays.stream(listOfPlayers)
