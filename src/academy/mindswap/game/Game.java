@@ -108,61 +108,83 @@ public class Game implements Runnable {
     }
 
     public void playAgain() {
-        if(isSinglePlayer){
-        player1.sendMessageToPlayer(PLAY_AGAIN);
-        String player1Response = player1.listenFromPlayer();
-        while (!player1Response.matches("[(yY|nN)]")) {
-            player1.sendMessageToPlayer(INVALID_INPUT);
-            player1Response = player1.listenFromPlayer();
-            }
-        if (player1Response.equalsIgnoreCase("Y")){
-            singlePlayer.resetNumberOfPlays();
-            gameLogic.createBoard();
-            singlePlayer.resetPlayBOT();
-            player1.sendMessageToPlayer(drawBoard());
-            startGame();
 
+        if (isSinglePlayer) {
+
+            player1.sendMessageToPlayer(PLAY_AGAIN);
+            String player1Response = player1.listenFromPlayer().toUpperCase();
+
+            while (!player1Response.matches("[(Y|N)]")) {
+                player1.sendMessageToPlayer(INVALID_INPUT);
+                player1Response = player1.listenFromPlayer();
+            }
+            switch (player1Response) {
+                case "Y":
+
+                    singlePlayer.resetNumberOfPlays();
+                    gameLogic.createBoard();
+                    singlePlayer.resetPlayBOT();
+                    player1.sendMessageToPlayer(drawBoard());
+                    startGame();
+
+                case "N":
+                    endGame(player1);
+
+            }
+            return;
         }
-         if (player1Response.equalsIgnoreCase("N")){
-        endGame();
-    }
-         return;
-}
+
         broadCastToAllPlayers(PLAY_AGAIN);
-        String player1Response = player1.listenFromPlayer();
-        while (!player1Response.matches("[(yY|nN)]")) {
+
+        String player1Response = player1.listenFromPlayer().toUpperCase();
+
+        while (!player1Response.matches("[(Y|N)]")) {
             player1.sendMessageToPlayer(INVALID_INPUT);
             player1Response = player1.listenFromPlayer();
         }
-        String player2Response = player2.listenFromPlayer();
-        while (!player2Response.matches("[(yY|nN)]")) {
+
+        String player2Response = player2.listenFromPlayer().toUpperCase();
+
+        while (!player2Response.matches("[(Y|N)]")) {
             player2.sendMessageToPlayer(INVALID_INPUT);
             player2Response = player2.listenFromPlayer();
         }
-        if (player1Response.equalsIgnoreCase(player2Response)){
+
+        if (player1Response.equalsIgnoreCase("Y")
+                && player1Response.equalsIgnoreCase(player2Response)) {
             gameLogic.createBoard();
             broadCastToAllPlayers(drawBoard());
             startGame();
+            return;
         }
-        if (player1Response.equalsIgnoreCase("N")
-                || player2Response.equalsIgnoreCase("N")) {
-            broadCastToAllPlayers(NO_MORE_PLAYING);
-            endGame();
+        if (player1Response.equalsIgnoreCase("N") &&
+                player1Response.equalsIgnoreCase(player2Response)) {
+            endGame(player1);
+            endGame(player2);
+            return;
         }
 
-    }
+        switch (player1Response) {
+            case "Y":
+                    endGame(player2);
+                    player1.endGame();
+                    player1.sendMessageToPlayer(WAITING_FOR_OPPONENT);
+                    server.findPlayer();
 
-    public void endGame() {
-       if(isSinglePlayer){
-           player1.sendMessageToPlayer(THANK_YOU_FOR_PLAYING);
-           player1.closeSocket();
-           return;
-       }
-        broadCastToAllPlayers(THANK_YOU_FOR_PLAYING);
+            case "N" :
+                    endGame(player2);
+                    player1.endGame();
+                    player1.sendMessageToPlayer(WAITING_FOR_OPPONENT);
+                    server.findPlayer();
+                }
 
-        for (int i = 0; i < listOfPlayers.length; i++) {
-            listOfPlayers[i].closeSocket();
         }
+
+
+    public void endGame(PlayerHandler player) {
+        player.sendMessageToPlayer(THANK_YOU_FOR_PLAYING);
+        player.closeSocket();
+
     }
 
 

@@ -49,30 +49,6 @@ public class PlayerHandler {
         String message;
         try {
             message = reader.readLine();
-                /*String[] splitted = message.split(" ");
-                switch (splitted[0]){
-                    case "name":
-                        name = splitted[1];
-                        broadCast(String.format(NEW_PLAYER_HAS_ARRIVED, name),this);
-                        sendMessageToPlayer(gameStatus(id));
-                        sendMessageToPlayer(ASK_FOR_POSITION);
-                        break;
-
-                    case "move":
-                        gameLogic.makeMove(splitted[1], id==0 ? "  O  " : "  X  ");
-                        broadCastToAllPlayers(gameStatus(id));
-                        broadCast(ASK_FOR_POSITION, this);
-                        break;
-
-                    case "quit":
-                        playerSocket.close();
-                        reader.close();
-                        writer.close();
-                        listOfPlayers.remove(id);
-                        System.out.println(listOfPlayers.size());
-                        break;
-
-                }*/
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -85,6 +61,10 @@ public class PlayerHandler {
 
     public void startGame(){
         isPlaying = true;
+    }
+
+    public void endGame(){
+        isPlaying = false;
     }
 
     public void setName() {
