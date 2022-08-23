@@ -26,6 +26,9 @@ public class Game implements Runnable {
     private int numberOfPlays;
 
     private GameLogic gameLogic;
+    private SinglePlayer singlePlayer;
+
+    private boolean isSinglePlayer;
 
     private static String[][] board;
 
@@ -44,10 +47,12 @@ public class Game implements Runnable {
     public Game(Server server, PlayerHandler player) {
         this.server = server;
         gameLogic = new GameLogic();
+        singlePlayer = new SinglePlayer();
         board = gameLogic.getBoard();
         isFirstGame = true;
         player1 = player;
         numberOfPlays = 0;
+        isSinglePlayer = true;
     }
 
 
@@ -59,34 +64,73 @@ public class Game implements Runnable {
             initiatePlayers();
         }
 
-        broadCastToAllPlayers(WELCOME_TO_TICTACTOE);
-        broadCastToAllPlayers(drawBoard());
-        numberOfPlays = 0;
+       if(isSinglePlayer){
+           player1.sendMessageToPlayer(drawBoard());
+           while(isGameStarted){
+               singlePlayerStart();
+           }
+       }
 
-        while (isGameStarted) {
+       if(!isSinglePlayer){
+           while(isGameStarted){
+               multiPlayerStart();
+           }
+       }
 
-            for (int i = 0; i < listOfPlayers.length; i++) {
-                PlayerHandler player = listOfPlayers[i];
-                gameLogic.makeMove(player);
-                broadCastToAllPlayers(drawBoard());
-                if ((checkWin(gameLogic.checkWin(player))) != 3) {
-                    isGameStarted = false;
-                    break;
-                }
+         playAgain();
+    }
+
+    private void multiPlayerStart() {
+        for (int i = 0; i < listOfPlayers.length; i++) {
+            PlayerHandler player = listOfPlayers[i];
+            gameLogic.makeMove(player);
+            broadCastToAllPlayers(drawBoard());
+            if ((checkWin(gameLogic.checkWin(player))) != 3) {
+                isGameStarted = false;
+                break;
             }
         }
-        playAgain();
+    }
+
+    private void singlePlayerStart() {
+        gameLogic.makeMove(player1);
+        player1.sendMessageToPlayer(drawBoard());
+        if(checkSinglePlayerWin(singlePlayer.singlePlayerCheckWin(board, player1)) != 3){
+            isGameStarted = false;
+            return;
+        }
+        gameLogic.fillBoard(singlePlayer.botMovement(board));
+        player1.sendMessageToPlayer(drawBoard());
+        if(checkSinglePlayerWin(singlePlayer.singlePlayerCheckWin(board, player1)) != 3){
+            isGameStarted = false;
+            return;
+        }
+
     }
 
     public void playAgain() {//ver default henrique
+        if(isSinglePlayer){
+        player1.sendMessageToPlayer(PLAY_AGAIN);
+        if (player1.listenFromPlayer().equalsIgnoreCase("Yes")){
+            singlePlayer.resetNumberOfPlays();
+        gameLogic.createBoard();
+        startGame();
+        }
+         if (player1.listenFromPlayer().equalsIgnoreCase("No")){
 
+        endGame();
+    }
+         return;
+}
         broadCastToAllPlayers(PLAY_AGAIN);
 
-        if (player1.listenFromPlayer().equalsIgnoreCase("Yes") && player2.listenFromPlayer().equalsIgnoreCase("Yes")) {
+        if (player1.listenFromPlayer().equalsIgnoreCase("Yes")
+                && player2.listenFromPlayer().equalsIgnoreCase("Yes")) {
             gameLogic.createBoard();
             startGame();
         }
-        if (player1.listenFromPlayer().equalsIgnoreCase("No") || player2.listenFromPlayer().equalsIgnoreCase("No")) {
+        if (player1.listenFromPlayer().equalsIgnoreCase("No")
+                || player2.listenFromPlayer().equalsIgnoreCase("No")) {
             broadCastToAllPlayers(NO_MORE_PLAYING);
             endGame();
         }
@@ -94,6 +138,11 @@ public class Game implements Runnable {
     }
 
     public void endGame() {
+       if(isSinglePlayer){
+           player1.sendMessageToPlayer(THANK_YOU_FOR_PLAYING);
+           player1.closeSocket();
+           return;
+       }
         broadCastToAllPlayers(THANK_YOU_FOR_PLAYING);
 
         for (int i = 0; i < listOfPlayers.length; i++) {
@@ -135,19 +184,40 @@ public class Game implements Runnable {
             player2.sendMessageToPlayer(String.format(WINNER, player2.getName()));
             player1.sendMessageToPlayer(String.format(LOSER, player1.getName()));
         } else if (playerID == 2) {
-            broadCastToAllPlayers(TIE);
+            player1.sendMessageToPlayer(TIE);
+        }
+        return playerID;
+    }
+
+    private int checkSinglePlayerWin(int playerID){
+        if(playerID == 0){
+            player1.sendMessageToPlayer(String.format(WINNER, player1.getName()));
+        } else if (playerID == 1) {
+            player1.sendMessageToPlayer(String.format(BOT_WINS));
+        } else if (playerID == 2) {
+            player1.sendMessageToPlayer(TIE);
         }
         return playerID;
     }
 
     public void initiatePlayers() {
-        Arrays.stream(listOfPlayers).forEach(player -> player.setPlayerMove());
-        while (listOfPlayers[0].getPlayerMove().equalsIgnoreCase(listOfPlayers[1].getPlayerMove())) {
-            player2.sendMessageToPlayer(CHOOSE_ANOTHER_ONE);
-            player2.setPlayerMove();
+        if(isSinglePlayer){
+            player1.setPlayerMove();
+            player1.sendMessageToPlayer(WELCOME_TO_TICTACTOE);
+            player1.sendMessageToPlayer(drawBoard());
+        } else{
+            Arrays.stream(listOfPlayers).forEach(player -> player.setPlayerMove());
+            while (listOfPlayers[0].getPlayerMove().equalsIgnoreCase(listOfPlayers[1].getPlayerMove())) {
+                player2.sendMessageToPlayer(CHOOSE_ANOTHER_ONE);
+                player2.setPlayerMove();
+            }
+            player1.setId(0);
+            player2.setId(1);
+
+            broadCastToAllPlayers(WELCOME_TO_TICTACTOE);
+            broadCastToAllPlayers(drawBoard());
         }
-        player1.setId(0);
-        player2.setId(1);
+
     }
 
     public void broadCast(String message, PlayerHandler playerHandler) {

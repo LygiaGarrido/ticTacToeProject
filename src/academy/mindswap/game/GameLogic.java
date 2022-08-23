@@ -20,6 +20,7 @@ public class GameLogic {
     }
 
     public void createBoard() {
+        numberOfPlays = 0;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 board[i][j] = " ";
@@ -30,22 +31,30 @@ public class GameLogic {
     public int checkWin(PlayerHandler player) {
         numberOfPlays ++;
         for (int r = 0; r < 3; r++) {
-            if (board[r][0] == player.getPlayerMove() && board[r][1] == player.getPlayerMove() && board[r][2] == player.getPlayerMove()) {
+            if (board[r][0].equals( player.getPlayerMove())
+                    && board[r][1].equals( player.getPlayerMove())
+                    && board[r][2].equals( player.getPlayerMove())) {
 
                 return player.getId();
             }
 
-            if (board[0][r] == player.getPlayerMove() && board[1][r] == player.getPlayerMove() && board[2][r] == player.getPlayerMove()) {
+            if (board[0][r].equals( player.getPlayerMove())
+                    && board[1][r].equals( player.getPlayerMove())
+                    && board[2][r].equals( player.getPlayerMove())) {
 
                 return player.getId();
             }
         }
         //checks diagonals for win-condition
-        if (board[0][0] == player.getPlayerMove() && board[1][1] == player.getPlayerMove() && board[2][2] == player.getPlayerMove()) {
+        if (board[0][0].equals( player.getPlayerMove())
+                && board[1][1].equals( player.getPlayerMove())
+                && board[2][2].equals( player.getPlayerMove())) {
 
             return player.getId();
         }
-        if (board[0][2] == player.getPlayerMove() && board[1][1] == player.getPlayerMove() && board[2][0] == player.getPlayerMove()) {
+        if (board[0][2].equals( player.getPlayerMove())
+                && board[1][1].equals( player.getPlayerMove())
+                && board[2][0].equals( player.getPlayerMove())) {
 
             return player.getId();
         }
@@ -69,7 +78,6 @@ public class GameLogic {
             player.sendMessageToPlayer(CHOOSE_ANOTHER_ONE);
             makeMove(player);
         }
-
 
     }
 
