@@ -12,31 +12,44 @@ import java.util.concurrent.*;
 import static academy.mindswap.utils.Messages.*;
 
 
-public class Game {
+public class Game implements Runnable {
 
     private Server server;
-    public List<PlayerHandler> listOfPlayers;
-    private ExecutorService threadPool;
-    private static final int NUMBER_OF_PLAYER = 2;
+
+    private PlayerHandler player1;
+    private PlayerHandler player2;
+    public PlayerHandler[] listOfPlayers;
 
     private boolean isGameStarted;
     private boolean isFirstGame;
 
-    private int numberOfPlays = 0;
+    private int numberOfPlays;
 
     private GameLogic gameLogic;
 
     private static String[][] board;
 
-    public Game(Server server) {
+    public Game(Server server, PlayerHandler[] listOfPlayers) {
         this.server = server;
-        threadPool = Executors.newFixedThreadPool(NUMBER_OF_PLAYER);
-        listOfPlayers = new CopyOnWriteArrayList<>();
+        this.listOfPlayers = listOfPlayers;
         gameLogic = new GameLogic();
         board = gameLogic.getBoard();
         isFirstGame = true;
+        player1 = listOfPlayers[0];
+        player2 = listOfPlayers[1];
+        numberOfPlays = 0;
 
     }
+
+    public Game(Server server, PlayerHandler player) {
+        this.server = server;
+        gameLogic = new GameLogic();
+        board = gameLogic.getBoard();
+        isFirstGame = true;
+        player1 = player;
+        numberOfPlays = 0;
+    }
+
 
     public void startGame() {
         isGameStarted = true;
@@ -48,10 +61,12 @@ public class Game {
 
         broadCastToAllPlayers(WELCOME_TO_TICTACTOE);
         broadCastToAllPlayers(drawBoard());
+        numberOfPlays = 0;
+
         while (isGameStarted) {
 
-            for (int i = 0; i < listOfPlayers.size(); i++) {
-                PlayerHandler player = listOfPlayers.get(i);
+            for (int i = 0; i < listOfPlayers.length; i++) {
+                PlayerHandler player = listOfPlayers[i];
                 gameLogic.makeMove(player);
                 broadCastToAllPlayers(drawBoard());
                 if ((checkWin(gameLogic.checkWin(player))) != 3) {
@@ -63,11 +78,9 @@ public class Game {
         playAgain();
     }
 
-    public void playAgain() {
+    public void playAgain() {//ver default henrique
 
         broadCastToAllPlayers(PLAY_AGAIN);
-        PlayerHandler player1 = listOfPlayers.get(0);
-        PlayerHandler player2 = listOfPlayers.get(1);
 
         if (player1.listenFromPlayer().equalsIgnoreCase("Yes") && player2.listenFromPlayer().equalsIgnoreCase("Yes")) {
             gameLogic.createBoard();
@@ -83,25 +96,14 @@ public class Game {
     public void endGame() {
         broadCastToAllPlayers(THANK_YOU_FOR_PLAYING);
 
-        for (int i = 0; i < listOfPlayers.size(); i++) {
-            listOfPlayers.get(i).closeSocket();
+        for (int i = 0; i < listOfPlayers.length; i++) {
+            listOfPlayers[i].closeSocket();
         }
     }
 
-    public synchronized List<PlayerHandler> getListOfPlayers() {
-        return listOfPlayers;
-    }
-
-
-  /*  private String drawBoard() {  // previous  method
-         String bordDraw = "\n" + board[0][0] + "|" + board[0][1] + "|" + board[0][2] + "\n"
-                + "______" + "\n" + board[1][0] + "|" + board[1][1] + "|" + board[1][2] + "\n" + "______"
-                + "\n" + board[2][0] + "|" + board[2][1] + "|" + board[2][2] + "\n";
-        return bordDraw;
-    }*/
 
     private String drawBoard() {
-        String bordDraw = "\n"+"    0   1   2 "
+        String bordDraw = "\n" + "    0   1   2 "
                 + "\n" + "  ┌───┬───┬───┐"
                 + "\n  | "
                 + board[0][0] + " | "
@@ -118,23 +120,14 @@ public class Game {
                 + board[2][1] + " | "
                 + board[2][2] + " | "
                 + "\n" + "  └───┴───┴───┘"
-                +"\n" + "    6   7   8   ";
+                + "\n" + "    6   7   8   ";
         return bordDraw;
     }
-   /* public static void drawBoard() {  // experimental  method
-        for (int i = 0; i <board.length ; i++) {
-            StringBuilder line = new StringBuilder("|");
-            for (int j = 0; j < board.length ; j++) {
-                line.append(board[i][j]).append("|");
-            }
-
-        }
-    }*/
 
 
     private int checkWin(int playerID) {
-        PlayerHandler player1 = listOfPlayers.get(0);
-        PlayerHandler player2 = listOfPlayers.get(1);
+        PlayerHandler player1 = listOfPlayers[0];
+        PlayerHandler player2 = listOfPlayers[1];
         if (playerID == 0) {
             player1.sendMessageToPlayer(String.format(WINNER, player1.getName()));
             player2.sendMessageToPlayer(String.format(LOSER, player2.getName()));
@@ -147,136 +140,30 @@ public class Game {
         return playerID;
     }
 
-
-    public void acceptPlayer(Socket playerSocket) {
-        //if (listOfPlayers.size() < 2) {
-        threadPool.submit(new PlayerHandler(playerSocket));
-        // }
-    }
-
-    public void addPlayerToList(PlayerHandler playerHandler) {
-        //playerHandler.setId(listOfPlayers.size());
-        listOfPlayers.add(playerHandler);
-    }
-
     public void initiatePlayers() {
-        listOfPlayers.forEach(player -> player.setNameAndPlayerMove());
+        Arrays.stream(listOfPlayers).forEach(player -> player.setPlayerMove());
+        while (listOfPlayers[0].getPlayerMove().equalsIgnoreCase(listOfPlayers[1].getPlayerMove())) {
+            player2.sendMessageToPlayer(CHOOSE_ANOTHER_ONE);
+            player2.setPlayerMove();
+        }
+        player1.setId(0);
+        player2.setId(1);
     }
 
     public void broadCast(String message, PlayerHandler playerHandler) {
-        listOfPlayers.stream()
+        Arrays.stream(listOfPlayers)
                 .filter(player -> !playerHandler.equals(player))
                 .forEach(player -> player.sendMessageToPlayer(message));
     }
 
     public void broadCastToAllPlayers(String message) {
-        listOfPlayers.stream().forEach(player -> player.sendMessageToPlayer(message));
+        Arrays.stream(listOfPlayers)
+                .forEach(player -> player.sendMessageToPlayer(message));
     }
 
-    public class PlayerHandler implements Runnable {
-        private Socket playerSocket;
-        private String name;
-        private int id;
-
-        private String playerMove;
-
-        private BufferedReader reader;
-        private BufferedWriter writer;
-        private String message;
-
-        public PlayerHandler(Socket playerSocket) {
-            this.playerSocket = playerSocket;
-            try {
-                reader = new BufferedReader(new InputStreamReader(playerSocket.getInputStream()));
-                writer = new BufferedWriter(new OutputStreamWriter(playerSocket.getOutputStream()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-
-        public void sendMessageToPlayer(String message) {
-            try {
-                writer.write(message);
-                writer.newLine();
-                writer.flush();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        public String listenFromPlayer() {
-            String message;
-            try {
-                message = reader.readLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return message;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getPlayerMove() {
-            return playerMove;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setNameAndPlayerMove() {
-            sendMessageToPlayer(ASK_FOR_NAME);
-            name = listenFromPlayer();
-            while (!name.matches("[a-zA-Z]+")) {
-                sendMessageToPlayer(INVALID_INPUT);
-                sendMessageToPlayer(ASK_FOR_NAME);
-                name = listenFromPlayer();
-            }
-
-            sendMessageToPlayer(ASK_PLAYER_MOVE);
-            playerMove = listenFromPlayer().toUpperCase();
-            while (!playerMove.matches("[(X|O)]")) {
-                sendMessageToPlayer(INVALID_INPUT);
-                sendMessageToPlayer(ASK_PLAYER_MOVE);
-                playerMove = listenFromPlayer();
-            }
-            while (listOfPlayers.get(0).playerMove.equalsIgnoreCase(listOfPlayers.get(1).playerMove)) {
-                sendMessageToPlayer(CHOOSE_ANOTHER_ONE);
-                sendMessageToPlayer(ASK_PLAYER_MOVE);
-                playerMove = listenFromPlayer();
-            }
-            sendMessageToPlayer(THE_GAME_WILL_BEGIN_SHORTLY);
-            broadCast(String.format(NEW_PLAYER_HAS_ARRIVED, name), this);
-
-        }
-
-        @Override
-        public void run() {
-            sendMessageToPlayer(WAITING_FOR_OPPONENT);
-            addPlayerToList(this);
-            setId(listOfPlayers.size() - 1);
-
-            while (true) {
-                if (Thread.interrupted()) {
-                    return;
-                }
-
-            }
-        }
-
-        private void closeSocket() {
-            try {
-                playerSocket.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    @Override
+    public void run() {
+        startGame();
     }
+
 }

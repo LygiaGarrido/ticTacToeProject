@@ -1,6 +1,12 @@
 package academy.mindswap.utils;
 
 public class Messages {
+    public static final String STARTING_A_NEW_GAME = "A new opponent connect, the game is about to start !";
+    public static final String SERVER_IS_RUNNING = "Server is running.";
+
+    public static final String WELCOME = "Be welcome %s";
+
+    public static final String MULTIPLAYER_OR_SINGLEPLAYER = "Choose: " + "\n" + "1 - for single player" + "\n" + "2 - for multiplayer";
     public static final String WAITING_FOR_PLAYERS_TO_CONNECT = "Waiting for players to connect...";
     public static final String WAITING_FOR_OPPONENT = "Waiting for opponent to connect";
     public static final String DEAD_SERVER = "Hum... it looks like the server is dead. We're sorry...";
@@ -21,8 +27,6 @@ public class Messages {
 
     public static final String THANK_YOU_FOR_PLAYING = "Thank you for playing, see you next time :)";
     public static final String THE_GAME_WILL_BEGIN_SHORTLY = "The game will begin in just a moment ..";
-
-
 
     public static final String PLAY_AGAIN = "Wanna play again? 'Yes' to play again 'No' to exit game";
     public static final String NO_MORE_PLAYING = " someone don't wanna play ";
