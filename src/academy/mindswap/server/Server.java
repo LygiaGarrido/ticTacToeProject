@@ -63,9 +63,6 @@ public class Server {
 
     }
 
-  /*  public void createGame(){
-        game = new Game(this);
-    }*/
 
     /**
      * The start method initializes the ServerSocket with a provided port
@@ -139,7 +136,7 @@ public class Server {
 
     /**
      * The method findPlayer finds a new player to interact
-     * with a previously connected player and starts a new game
+     * with a previously connected player and starts a new multiplayer game.
      */
 
     public void findPlayer() {

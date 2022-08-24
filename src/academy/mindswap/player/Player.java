@@ -155,18 +155,7 @@ public class Player {
         }
 
         /**
-         * The override of the run() method calls the readMessage() method
-         */
-        @Override
-        public void run() {
-            try {
-                readMessage();
-            } catch (IOException e) {
-            }
-        }
-
-        /**
-         * This method allows the reader to read line and prints it.
+         * This method allows the reader to read the messages sent to the client socket and prints it.
          * If the message sent from the server is null, it closes the connection,
          * otherwise it keeps the communication channel open.
          *
@@ -180,7 +169,18 @@ public class Player {
             }
             System.out.println(readMessageFromServer);
             readMessage();
+        }
+
+        /**
+         * The override of the run() method calls the readMessage() method
+         */
+        @Override
+        public void run() {
+            try {
+                readMessage();
+            } catch (IOException e) {
             }
+        }
 
         }
 
