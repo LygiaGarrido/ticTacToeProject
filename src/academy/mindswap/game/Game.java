@@ -103,7 +103,7 @@ public class Game implements Runnable {
      * It starts the game according to the mode.
      * When the games are over, it calls the playAgain() method.
      */
-    public void startGame() {
+    private void startGame() {
         isGameStarted = true;
 
         if (isFirstGame) {
@@ -169,7 +169,7 @@ public class Game implements Runnable {
      * In case only one of the players wishes to continue playing,
      * the server looks for a new opponent before starting a new game.
      */
-    public void playAgain() {
+    private void playAgain() {
 
         if (isSinglePlayer) {
 
@@ -247,7 +247,7 @@ public class Game implements Runnable {
      *
      * @param player
      */
-    public void endGame(PlayerHandler player) {
+    private void endGame(PlayerHandler player) {
         player.sendMessageToPlayer(THANK_YOU_FOR_PLAYING);
         player.closeSocket();
 
@@ -314,7 +314,7 @@ public class Game implements Runnable {
     }
 
     /**
-     * This is the logic to deal with the messages in case of winners/losers/tie
+     * This is the logic to deal with the messages and score in case of winners/losers/tie.
      * @param playerID
      * @return int playerID
      */
@@ -336,8 +336,8 @@ public class Game implements Runnable {
     }
 
     /**
-     * This is the logic to deal with the messages in case of winners/losers/tie
-     * when in single player mode
+     * This is the logic to deal with the messages and score in case of winners/losers/tie
+     * when in single player mode.
      */
 
     private int checkSinglePlayerWin(int playerID){
@@ -359,7 +359,7 @@ public class Game implements Runnable {
      * sends a welcome message and draws the board for the players
      * In case of multiplayer, it checks if the move symbol has already been chosen.
      */
-    public void initiatePlayers() {
+    private void initiatePlayers() {
         if(isSinglePlayer){
             player1.setPlayerMove();
             singlePlayer.setPlayMove(player1);
@@ -381,22 +381,11 @@ public class Game implements Runnable {
     }
 
     /**
-     * Method to send messages from player to player
-     * @param message
-     * @param playerHandler
-     */
-    public void broadCast(String message, PlayerHandler playerHandler) {
-        Arrays.stream(listOfPlayers)
-                .filter(player -> !playerHandler.equals(player))
-                .forEach(player -> player.sendMessageToPlayer(message));
-    }
-
-    /**
      * This method broadcasts the message from the server/game to all players at once.
      * It can only be used in multiplayer mode.
      * @param message
      */
-    public void broadCastToAllPlayers(String message) {
+    private void broadCastToAllPlayers(String message) {
         Arrays.stream(listOfPlayers)
                 .forEach(player -> player.sendMessageToPlayer(message));
     }

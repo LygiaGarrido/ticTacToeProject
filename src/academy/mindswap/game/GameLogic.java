@@ -31,8 +31,7 @@ import static academy.mindswap.utils.Messages.*;
 public class GameLogic {
 
     private String[][] board = new String[3][3];
-    int numberOfPlays = 0;
-
+    private int numberOfPlays = 0;
 
     public String[][] getBoard() {
         return board;
@@ -138,7 +137,7 @@ public class GameLogic {
      * @param player
      * @return boolean
      */
-    public boolean submitMove(String userInput, PlayerHandler player) {
+    private boolean submitMove(String userInput, PlayerHandler player) {
         Integer number = Integer.parseInt(userInput);
 
         if (board[number / 3][number % 3].equalsIgnoreCase(" ")) {
