@@ -3,7 +3,7 @@
 
   This project aims to improve programming skills in a team context within the MindSwap academy, where we developed a tic-tac-toe in java programming language that we created from scratch using the acquired knowledge and tools and problem solving until its presentation.
   
-### How to play Tic Tac Toe!
+### How to play Tic Tac Toe?
 
 Two players take turns marking the spaces in a three-by-three grid with X or O. The player who succeeds in placing three of their marks in a horizontal, vertical, or diagonal row is the winner.
 
