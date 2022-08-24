@@ -2,11 +2,11 @@
 # TicTacToeProject                                                                        
 
   This project aims to improve programming skills in a team context within the MindSwap academy, where we developed a tic-tac-toe in java programming language that we created from scratch using the acquired knowledge and tools and problem solving until its presentation.
+  
+### How to play Tic Tac Toe!
 
+Two players take turns marking the spaces in a three-by-three grid with X or O. The player who succeeds in placing three of their marks in a horizontal, vertical, or diagonal row is the winner.
 
-## How to Play Tic Tac Toe?
-
-To play tic tac toe, you need a standard playing board and nine pieces. You start out by placing the X's and O's on the board. Then, you place the pieces on the board starting from the top left corner and move down and across until you reach the bottom right corner. Once you have placed all of the pieces, you take turns removing a piece from the board. Whoever removes the last piece wins!
 
 ## What does the app do?
 
@@ -24,10 +24,10 @@ To play tic tac toe, you need a standard playing board and nine pieces. You star
 The things you need before run this project
 
 ```
-> You need development software
+> You need a development software, in our case we used Intellij IDEA
 > git clone
 > Run server and client
-> Ready to have some fun
+> Be ready to have some fun
 
 
 ```
@@ -36,8 +36,8 @@ The things you need before run this project
 
 
 ```
-> The Server is started
-> Players connect to it
+> Start the server
+> Connect the players
 ```
 ![unnamed](https://user-images.githubusercontent.com/108727621/186269384-25c76023-4dda-47c7-90e0-4e3f69e180f5.png)
 ```
@@ -54,7 +54,7 @@ The things you need before run this project
 
 ```
 
-![tiktak](https://user-images.githubusercontent.com/108727621/186273758-7b8ae4e9-b52b-4635-b7e3-9dcb327c38a6.png)
+![tiktakv2](https://user-images.githubusercontent.com/108727621/186378509-e4f20bfe-f8a6-4192-ad6b-c2e593064324.png)
 
 ## collaborators
 
@@ -63,5 +63,6 @@ Lygia ( https://github.com/LygiaGarrido)
 Tiago ( https://github.com/tiagocncosta)
 
 Rui   (https://github.com/Rui-Vieira)
+
 
 
